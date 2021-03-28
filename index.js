@@ -36,10 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-// const { default: axios } = require("axios");
-// import {} from "config"
 var axios_1 = require("axios");
 var config_1 = require("./config");
+var cli_progress_1 = require("cli-progress");
 var ListenerUrl = "https://pixel.w84.vkforms.ru/HappySanta/slaves/1.0.0/";
 var StartUrl = ListenerUrl + "start";
 var BuySlaveUrl = ListenerUrl + "buySlave";
@@ -47,9 +46,13 @@ var BuyFetterUrl = ListenerUrl + "buyFetter";
 var JobSlaveUrl = ListenerUrl + "jobSlave";
 var UserUrl = ListenerUrl + "user";
 var diapasons = config_1["default"].User_ID;
+var auth = "Bearer vk_access_token_settings=friends,status&vk_app_id=7794757&vk_are_notifications_enabled=1&vk_is_app_user=1&vk_is_favorite=0&vk_language=ru&vk_platform=desktop_web&vk_ref=other&vk_ts=1616928990&vk_user_id=598176365&sign=6gQtj44bMFsEit-sNsAvlUNC6FLtpJVNq3G8fWrypTE";
 var headers = {
-    Authorization: "Bearer vk_access_token_settings=friends,status&vk_app_id=7794757&vk_are_notifications_enabled=1&vk_is_app_user=1&vk_is_favorite=0&vk_language=ru&vk_platform=desktop_web&vk_ref=other&vk_ts=1616852688&vk_user_id=598176365&sign=APSioymZIbt-7KLdbr-cD241cscxK6KaUgn3nwhBAAg",
-    "User-Agent": config_1["default"].User_Agent
+    Authorization: auth,
+    "User-Agent": config_1["default"].User_Agent,
+    origin: "https://prod-app7794757-c1ffb3285f12.pages-ac.vk-apps.com",
+    referer: "https://prod-app7794757-c1ffb3285f12.pages-ac.vk-apps.com/index.html?" +
+        auth
 };
 var delay = function (ms) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
     switch (_a.label) {
@@ -60,36 +63,81 @@ var delay = function (ms) { return __awaiter(void 0, void 0, void 0, function ()
 function getRandomId() {
     return Math.floor(Math.random() * Math.floor(diapasons));
 }
+function getRandomNumberFromDiapasons(minimum, maximum) {
+    return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+}
 function doOneCycle() {
     return __awaiter(this, void 0, void 0, function () {
-        var me, randomUser;
+        var progressBar, randomId, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, fetchMe()];
+                case 0:
+                    _a.trys.push([0, 3, , 5]);
+                    progressBar = new cli_progress_1.SingleBar({}, cli_progress_1.Presets.shades_classic);
+                    progressBar.start(100, 0);
+                    // let me = await fetchMe();
+                    // progressBar.update(20);
+                    // if (me.balance < 40) {
+                    //   console.log("\nДенег пока нет. Не хватает даже на раба!");
+                    //   process.exit();
+                    // }
+                    // let randomUser = await fetchRandomUser(me.balance);
+                    progressBar.update(40);
+                    randomId = getRandomId();
+                    return [4 /*yield*/, buySlave(randomId)];
                 case 1:
-                    me = _a.sent();
-                    return [4 /*yield*/, fetchRandomUser(me.balance)];
+                    _a.sent();
+                    progressBar.update(60);
+                    // let currentBalance = me.balance - randomUser.price;
+                    // await jobSlave(randomUser.id);
+                    return [4 /*yield*/, jobSlave(randomId)];
                 case 2:
-                    randomUser = _a.sent();
-                    return [4 /*yield*/, buySlave(randomUser.id)];
-                case 3:
+                    // let currentBalance = me.balance - randomUser.price;
+                    // await jobSlave(randomUser.id);
                     _a.sent();
-                    return [4 /*yield*/, buyFetter(randomUser.id)];
-                case 4:
-                    _a.sent();
-                    return [4 /*yield*/, jobSlave(randomUser.id)];
-                case 5:
-                    _a.sent();
-                    console.log("\u041A\u0443\u043F\u043B\u0435\u043D \u0440\u0430\u0431 " + randomUser.id + " \u0437\u0430 " + randomUser.price + "\u0440.\n\u0421\u0435\u0439\u0447\u0430\u0441 \u0440\u0430\u0431\u043E\u0432 " + (me.slaves_count + 1));
+                    progressBar.update(80);
+                    // if (currentBalance < randomUser.fetter_price) {
+                    //   console.log("\nДенег пока нет. Не хватает на цепь!");
+                    //   process.exit();
+                    // }
+                    try {
+                        // await buyFetter(randomUser.id);
+                        // await buyFetter(randomId);
+                    }
+                    catch (error) {
+                        console.log("\nОшибка при покупке цепи. Возможно не хватает денег!");
+                        // process.exit();
+                    }
+                    progressBar.update(100);
+                    progressBar.stop();
+                    // console.log(
+                    //   `\nКуплен раб ${randomUser.id} за ${
+                    //     randomUser.price
+                    //   }р. Идет копать шахты в цепях.\nСейчас рабов ${
+                    //     me.slaves_count + 1
+                    //   }\nДа здравствует ЕБЕНГРАД!!!`
+                    // );
+                    console.log("\n\u041A\u0443\u043F\u043B\u0435\u043D \u0440\u0430\u0431 " + randomId + ". \u0418\u0434\u0435\u0442 \u043A\u043E\u043F\u0430\u0442\u044C \u0448\u0430\u0445\u0442\u044B \u0431\u0435\u0445 \u0446\u0435\u043F\u0435\u0439. \u0414\u0430 \u0437\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0435\u0442 \u0415\u0411\u0415\u041D\u0413\u0420\u0410\u0414!!!");
                     doOneCycle();
-                    return [2 /*return*/];
+                    return [3 /*break*/, 5];
+                case 3:
+                    error_1 = _a.sent();
+                    console.error(error_1);
+                    // process.exit();
+                    return [4 /*yield*/, delay(700)];
+                case 4:
+                    // process.exit();
+                    _a.sent();
+                    doOneCycle();
+                    return [3 /*break*/, 5];
+                case 5: return [2 /*return*/];
             }
         });
     });
 }
 function fetchMe() {
     return __awaiter(this, void 0, void 0, function () {
-        var resp, me, error_1;
+        var resp, me, error_2;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -100,8 +148,8 @@ function fetchMe() {
                     me = resp.data.me;
                     return [2 /*return*/, me];
                 case 2:
-                    error_1 = _a.sent();
-                    console.error(error_1);
+                    error_2 = _a.sent();
+                    console.error(error_2);
                     return [3 /*break*/, 3];
                 case 3: return [2 /*return*/];
             }
@@ -110,7 +158,7 @@ function fetchMe() {
 }
 function fetchRandomUser(balance) {
     return __awaiter(this, void 0, void 0, function () {
-        var result, randomId, resp, randomUser, error_2;
+        var result, randomId, resp, randomUser, error_3;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -123,7 +171,7 @@ function fetchRandomUser(balance) {
                 case 2:
                     resp = _a.sent();
                     randomUser = resp.data;
-                    if (balance > randomUser.price) {
+                    if (balance > randomUser.price /*&& randomUser.profit_per_min != 0*/) {
                         return [2 /*return*/, randomUser];
                     }
                     else {
@@ -131,8 +179,8 @@ function fetchRandomUser(balance) {
                     }
                     return [3 /*break*/, 4];
                 case 3:
-                    error_2 = _a.sent();
-                    console.error(error_2);
+                    error_3 = _a.sent();
+                    console.error(error_3);
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
             }
@@ -162,12 +210,16 @@ function jobSlave(userId) {
 }
 function postCustom(url, data) {
     return __awaiter(this, void 0, void 0, function () {
+        var resp;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, delay(2000)];
+                case 0: return [4 /*yield*/, delay(getRandomNumberFromDiapasons(600, 1500))];
                 case 1:
                     _a.sent();
-                    return [2 /*return*/, axios_1["default"].post(url, data, { headers: headers })];
+                    return [4 /*yield*/, axios_1["default"].post(url, data, { headers: headers })];
+                case 2:
+                    resp = _a.sent();
+                    return [2 /*return*/, resp];
             }
         });
     });
@@ -176,7 +228,7 @@ function getCustom(url) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, delay(2000)];
+                case 0: return [4 /*yield*/, delay(getRandomNumberFromDiapasons(600, 1500))];
                 case 1:
                     _a.sent();
                     return [2 /*return*/, axios_1["default"].get(url, { headers: headers })];
